@@ -18,7 +18,7 @@ public class SolverThread extends Thread{
 			x = r.nextDouble();
 			y = r.nextDouble();
 		
-			if(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) <= 1) {
+			if(Math.sqrt(x * x + y * y) <= 1) {
 				hits++;
 			}
 		}
