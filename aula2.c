@@ -18,11 +18,13 @@ void *f(void * arg){
 		
 		drand48_r(&buffer, &a);
 		drand48_r(&buffer, &b);
+		
+		//buffer->__x = b;	
 		if( (a*a + b*b) <= 1){
 			(*count)++;
 		}	
 	}
-	printf("hits: %i\n", *count);
+	printf("hits no f: %i\n", *count);
 	return (void*)count;
 }
 
@@ -30,18 +32,24 @@ int main (int argc, char *argv[])
 {
 
 	int shots = atoi(argv[1]);	
-	int hits;
+	int* hits;
 	if(argc > 2){
-		int threads = *(int*) argv[2];
-		pthread_t th2;
-		pthread_create(&th2, NULL, f, (void *) &shots);
+		int threads = atoi( argv[2]);
+		pthread_t thread[threads];
+		for(int i = 0; i < threads; i++){
+			pthread_create(&thread[i], NULL, f, (void *) &shots);
+		}
+		for(int j = 0; j < threads; j++){
+			pthread_join(thread[j], (void *) hits);
+		}
 
-		pthread_join(th2, (void*)&hits);
 	}else{
-		hits = *(int*)f((void*)&shots);
+		*hits = *(int*)f((void*)&shots);
 	}
-	
-	printf("hits: %i\n", hits);
-	printf("%f\n", (double)(hits*4)/shots);
+printf("tou aqui\n");	
+	printf("hits na main: %d\n", *hits);
+printf("tou aqui2\n");	
+	printf("%f\n", (double)(*hits*4)/shots);
+printf("tou aqui3\n");	
 	return 0;
 }
