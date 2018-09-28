@@ -45,16 +45,19 @@ int main(int argc, char *argv[])
   printf("Seed board:\n");
   game_print_board(game);
 
-  for (generation = 1; generation <= game_config_get_generations(config); generation++) {
-    if (game_tick(game)) {
-      fprintf(stderr, "Error while advancing to the next generation.\n");
-      game_config_free(config);
-      game_free(game);
-    }
+	for (generation = 1; generation <= game_config_get_generations(config); generation++) {
+	  if (game_tick(game)) {
+	    fprintf(stderr, "Error while advancing to the next generation.\n");
+	    game_config_free(config);
+	    game_free(game);
+	  }
+		if(argc == CLI_ARGC || (argc == CLI_ARGC_S && generation == game_config_get_generations(config))){
+	 		printf("\nGeneration %zu:\n", generation);
+	  	game_print_board(game);
+		}
+	}
+	
 
-    printf("\nGeneration %zu:\n", generation);
-    game_print_board(game);
-  }
 
   game_config_free(config);
   game_free(game);

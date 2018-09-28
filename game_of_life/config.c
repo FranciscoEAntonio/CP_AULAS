@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "config.h"
 #include "mem.h"
 
@@ -54,19 +55,24 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
   FILE *file;
   GameConfig *config;
   long generations;
+	int silent_mode = 0; 
 
-  if (argc != CLI_ARGC) {
+	if(argc == CLI_ARGC_S && strcmp(argv[1], SILENT_FLAG) ==0){
+		silent_mode = 1;
+	}
+
+  if (argc != CLI_ARGC && silent_mode == 0) {
     fprintf(stderr, usage_message);
     return NULL;
   }
 
-  generations = strtol(argv[1], &endptr, 10);
+  generations = strtol(argv[1 + silent_mode], &endptr, 10);
   if ((*endptr != '\0') || (generations < 0)) {
     fprintf(stderr, "Error: GENERATIONS must be a valid positive integer\n");
     return NULL;
   }
 
-  file = fopen(argv[2], "r");
+  file = fopen(argv[2+silent_mode], "r");
   if (!file) {
     fprintf(stderr, "Error: could not open '%s'\n", argv[2]);
     return NULL;

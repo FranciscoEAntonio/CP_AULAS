@@ -27,6 +27,8 @@
 #include <stdio.h>
 
 #define CLI_ARGC 3
+#define CLI_ARGC_S 4
+#define SILENT_FLAG "-s"
 
 /**
  * Structure to hold the game options.
