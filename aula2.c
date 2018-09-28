@@ -2,24 +2,30 @@
 #include <stdio.h> 
 #define _GNU_SOURCE
 #include <pthread.h>
-
+#include <time.h>
 
 void *f(void * arg){
 
 	int * count = malloc(sizeof(int*));
 	
 	int y = *(int*)arg;
-
+	long ms;
 	double a = 0;
 	double b = 0;
-	struct drand48_data buffer;
-	printf("y: %i\n", y);
+	//struct drand48_data buffer;
+	//srand((unsigned) time(&t));
+ 	struct timespec spec;
+	
 	for(int i = 0; i < y; i++){
 		
-		drand48_r(&buffer, &a);
-		drand48_r(&buffer, &b);
-		
-		//buffer->__x = b;	
+		//drand48_r(&buffer, &a);
+		//drand48_r(&buffer, &b);
+		clock_gettime(CLOCK_REALTIME, &spec);
+		ms = spec.tv_nsec;
+		a = (double)rand_r((unsigned int*)&ms)/RAND_MAX;
+		clock_gettime(CLOCK_REALTIME, &spec);
+		ms = spec.tv_nsec;
+		b = (double)rand_r((unsigned int*)&ms)/RAND_MAX;
 		if( (a*a + b*b) <= 1){
 			(*count)++;
 		}	
@@ -30,26 +36,24 @@ void *f(void * arg){
 
 int main (int argc, char *argv[]) 
 {
-
 	int shots = atoi(argv[1]);	
-	int* hits;
+	int hits;
+	void * ret;
 	if(argc > 2){
 		int threads = atoi( argv[2]);
+		int shotsPerThread = shots/threads;
 		pthread_t thread[threads];
 		for(int i = 0; i < threads; i++){
-			pthread_create(&thread[i], NULL, f, (void *) &shots);
+			pthread_create(&thread[i], NULL, f, (void *) &shotsPerThread);
 		}
 		for(int j = 0; j < threads; j++){
-			pthread_join(thread[j], (void *) hits);
+			pthread_join(thread[j], &ret);
+			hits += *(int*)ret;
 		}
-
 	}else{
-		*hits = *(int*)f((void*)&shots);
+		hits = *(int*)f((void*)&shots);
 	}
-printf("tou aqui\n");	
-	printf("hits na main: %d\n", *hits);
-printf("tou aqui2\n");	
-	printf("%f\n", (double)(*hits*4)/shots);
-printf("tou aqui3\n");	
+	printf("hits na main: %d\n", hits);
+	printf("%f\n", (double)(hits*4)/shots);
 	return 0;
 }
