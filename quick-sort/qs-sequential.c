@@ -47,12 +47,19 @@ int main(int argc, char* argv[]) {
     for (i = 0; i < N; i++)
         array[i] = drand48();
 
+	for(int i = 0; i < N; i++)
+		printf("%f ", array[i]);
+	printf("\n");
+
     start = wall_clock_time();
     qsort(array, N, sizeof(*array), less_than);
     end = wall_clock_time();
 
     printf("QuickSort %s: Array size = %d, Wall clock elapsed time = %ld\n", VERSION, N, (long) (end-start));
-
+	
+	//for(int i = 0; i < N; i++)
+		//printf("%f ", array[i]);
+	
     free(array);
 
     return 0;

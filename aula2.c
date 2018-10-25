@@ -7,24 +7,22 @@
 void *f(void * arg){
 
 	int * count = malloc(sizeof(int*));
-	
-	int y = *(int*)arg;
+	*count = 0;
+	register int y = *(int*)arg;
 	long ms;
 	double a = 0;
 	double b = 0;
 	//struct drand48_data buffer;
 	//srand((unsigned) time(&t));
  	struct timespec spec;
-	
-	for(int i = 0; i < y; i++){
+	clock_gettime(CLOCK_REALTIME, &spec);
+	ms = spec.tv_nsec;
+		
+	for(register int i = 0; i < y; i++){
 		
 		//drand48_r(&buffer, &a);
 		//drand48_r(&buffer, &b);
-		clock_gettime(CLOCK_REALTIME, &spec);
-		ms = spec.tv_nsec;
 		a = (double)rand_r((unsigned int*)&ms)/RAND_MAX;
-		clock_gettime(CLOCK_REALTIME, &spec);
-		ms = spec.tv_nsec;
 		b = (double)rand_r((unsigned int*)&ms)/RAND_MAX;
 		if( (a*a + b*b) <= 1){
 			(*count)++;
@@ -37,7 +35,7 @@ void *f(void * arg){
 int main (int argc, char *argv[]) 
 {
 	int shots = atoi(argv[1]);	
-	int hits;
+	int hits = 0;
 	void * ret;
 	if(argc > 2){
 		int threads = atoi( argv[2]);
@@ -49,6 +47,7 @@ int main (int argc, char *argv[])
 		for(int j = 0; j < threads; j++){
 			pthread_join(thread[j], &ret);
 			hits += *(int*)ret;
+			free(ret);
 		}
 	}else{
 		hits = *(int*)f((void*)&shots);
