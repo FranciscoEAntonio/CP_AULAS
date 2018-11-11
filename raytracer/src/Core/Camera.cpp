@@ -60,13 +60,12 @@ void Camera::capture(Scene &s, const char *filename)
     // Compute the center of the top left pixel
     Vector3 pixel = topleft + dx * 0.5 - dy * .5;   // Center of the pixel
     Vector3 initial = pixel;
-    Vector3 left = pixel;
+    //Vector3 left = pixel;
     cilk_for(unsigned int j=0; j<sensor->h; j++)
     {
         cilk_for(unsigned int i=0; i<sensor->w; i++)
         {
-			pixel = initial + i*dx + j*dy;
-
+			pixel = initial + (i+1)*dx + (j+1)*dy;
             // Compute vector from eye to the center of the current pixel
             Vector3 to = pixel - eye;
             // and normalize it
@@ -83,6 +82,8 @@ void Camera::capture(Scene &s, const char *filename)
             
             // Move to the pixel on the right
             //pixel += dx;
+			if(j < 2 && i < 2)
+				printf("%f %f %f \n", pixel.x, pixel.y, pixel.z);
         }
         // Move to the pixel below the leftmost pixel of the current line
         //left += dy;
