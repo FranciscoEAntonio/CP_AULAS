@@ -1,6 +1,6 @@
 
 public class Main {
-
+//teste git no eclipse
 	public static void main(String[] args) {
 		double shots = Double.parseDouble(args[0]);
 		double hits = 0;
